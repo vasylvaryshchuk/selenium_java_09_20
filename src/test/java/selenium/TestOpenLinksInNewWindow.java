@@ -1,6 +1,8 @@
 package selenium;
 
 import java.util.List;
+import java.util.Set;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,9 +42,12 @@ public class TestOpenLinksInNewWindow {
         driver.findElement(LOGIN_BUTTON).click();
     }
 
-    public void switchToNewWindow(WebDriver driver){
-        for (String winHandle : driver.getWindowHandles()) {
-            driver.switchTo().window(winHandle);
+    public void switchToNewWindow(WebDriver driver, String parentWindow) {
+        Set<String> handles = driver.getWindowHandles();
+        for (String windowHandle : handles) {
+            if (!windowHandle.equals(parentWindow)) {
+                driver.switchTo().window(windowHandle);
+            }
         }
     }
 
@@ -74,7 +79,7 @@ public class TestOpenLinksInNewWindow {
             String externalUrl = element.getAttribute("href");
             element.click();
             // Switch to new window opened
-            switchToNewWindow(browserChrome);
+            switchToNewWindow(browserChrome, parentWindowHandle);
             String currentUrl = browserChrome.getCurrentUrl();
             assertEquals(currentUrl, externalUrl);
             // Close the new window
